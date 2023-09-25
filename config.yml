@@ -1,0 +1,58 @@
+---
+- hosts: all
+  become: true
+  vars:
+     name: Caberte_PrelimExam
+  
+  tasks:
+
+  - name: install python3 in Ubuntu
+    apt:
+      name: python3
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install python3 in CentOS    
+    dnf:
+      name: python3
+      state: latest
+    when: ansible_distribution == "CentOS"
+
+  - name: install pip3 in Ubuntu    
+    apt:
+      name: python3-pip
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install pip3 in CentOS
+    dnf:
+      name: python3-pip 
+      state: latest
+    when: ansible_distribution == "CentOS"
+
+  - name: install java in Ubuntu
+    apt:
+      name: default-jre 
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install java in CentOS
+    dnf:
+      name: java-11-openjdk-devel
+      state: latest
+    when: ansible_distribution == "CentOS"
+
+  - name: uses pip3 as default pip & python3 as default python
+    shell:
+      echo 'alias python=/usr/bin/python3 >> ~/.bashrc'
+      echo 'alias pip=/home/skycaberte/.local/bin/pip3 >> ~/.bashrc'
+
+  - name: motd
+    debug: 
+      msg: "Ansible Managed node by {{ name }}"
+
+  - name: create user with variable in config.yml
+    ansible.builtin.user:
+      name: "{{ name }}"
+      createhome: yes
+      home: /home/"{{ name }}"
